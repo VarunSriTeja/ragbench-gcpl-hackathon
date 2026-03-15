@@ -21,7 +21,7 @@ flowchart LR
     H --> I
     I --> J[Grounded answer generator]
     I --> K[Benchmark runner]
-    K --> L[precision@k / recall@k / mrr]
+    K --> L[Precision at k | Recall at k | MRR]
 ```
 
 ## Components
