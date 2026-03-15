@@ -97,13 +97,6 @@ Bonus coverage:
 - reranking
 - local extractive fallback when no LLM API is present
 
-## Recommended demo flow
-
-1. Explain the dataset and why it was curated.
-2. Show the two chunking strategies.
-3. Run `evaluate` with `sentence-transformers`, hybrid retrieval, and reranking.
-4. Run `ask` with a few questions.
-5. Highlight hallucination controls, trade-offs, and next steps.
 
 ## Submission materials
 
