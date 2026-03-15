@@ -1,0 +1,167 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{titlesec}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  urlcolor=blue!50!black
+}
+
+\titleformat{\section}{\large\bfseries}{}{0em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{}{0em}{}
+\setlist[itemize]{leftmargin=1.2em,itemsep=3pt,topsep=3pt}
+
+\title{\textbf{GCPL AI Intern Hackathon Submission}\\
+Option B: RAG System with Retrieval Benchmarking}
+\author{Your Name}
+\date{15 March 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This submission implements a Retrieval-Augmented Generation (RAG) prototype on a curated dataset and evaluates retrieval quality with controlled experiments. The system covers document ingestion and chunking, embedding generation, vector retrieval, grounded answering, and benchmark reporting with at least 10 evaluation queries. Comparative testing includes two chunking strategies, with optional hybrid retrieval and reranking as bonus enhancements.
+\end{abstract}
+
+\section{Problem Interpretation and Approach}
+The objective is to build a working Option B prototype that is reproducible, evaluation-first, and grounded in retrieved evidence. The implemented approach is:
+\begin{itemize}
+  \item curate a compact domain-relevant dataset,
+  \item compare two chunking strategies (\texttt{fixed} and \texttt{markdown}),
+  \item run semantic retrieval with optional lexical fusion and reranking,
+  \item generate grounded answers from retrieved context,
+  \item report metrics over a fixed benchmark set of 10 test queries.
+\end{itemize}
+
+\section{System Architecture}
+\subsection{Pipeline}
+\begin{itemize}
+  \item \textbf{Document Loader}: reads markdown files and metadata from \texttt{data/raw}.
+  \item \textbf{Chunkers}: two strategies --- fixed-size overlapping chunks and heading-aware markdown chunks.
+  \item \textbf{Embedding Layer}: dense embeddings via \texttt{sentence-transformers} (TF-IDF fallback).
+  \item \textbf{Retrieval Layer}: dense retrieval, optional hybrid fusion with BM25.
+  \item \textbf{Reranking Layer (bonus)}: optional cross-encoder reranking of retrieved candidates.
+  \item \textbf{Answer Generator}: grounded extractive response (optional OpenAI synthesis).
+  \item \textbf{Evaluator}: computes precision@k, recall@k, MRR, and answer hit rate.
+\end{itemize}
+
+\subsection{Data Flow}
+Documents $\rightarrow$ chunks $\rightarrow$ embeddings $\rightarrow$ index/search $\rightarrow$ top-$k$ context $\rightarrow$ answer generation $\rightarrow$ metrics.
+
+\subsection{Component Responsibilities}
+\begin{itemize}
+  \item \texttt{dataset.py}: load documents and evaluation questions.
+  \item \texttt{chunking.py}: build chunk variants for controlled comparison.
+  \item \texttt{embeddings.py}: embedding backends and similarity primitives.
+  \item \texttt{retrieval.py}: dense/hybrid retrieval and rerank integration.
+  \item \texttt{generation.py}: grounded answering logic.
+  \item \texttt{evaluation.py}: benchmark execution and aggregate metrics.
+\end{itemize}
+
+\subsection{Memory / State Management}
+This prototype uses stateless per-query retrieval over a prebuilt local index. Benchmark state is persisted as JSON artifacts for reproducibility.
+
+\section{Technology Choices and Reasoning}
+\begin{longtable}{p{0.2\textwidth}p{0.24\textwidth}p{0.24\textwidth}p{0.24\textwidth}}
+\toprule
+\textbf{What Chosen} & \textbf{Why Chosen} & \textbf{Alternatives Considered} & \textbf{Trade-offs} \\
+\midrule
+Python CLI workflow & Fast iteration and reproducible local runs in a short hackathon window & Full UI app & Less visual polish, stronger engineering depth \\
+\texttt{all-MiniLM-L6-v2} embeddings & Strong local semantic retrieval quality & TF-IDF only baseline & Better quality but model download/runtime overhead \\
+BM25 (\texttt{rank-bm25}) & Captures exact terms and acronyms & Dense-only retrieval & Extra index + fusion complexity \\
+Hybrid rank fusion & Robustly combines dense and lexical rankings & Raw score blending & Simple and stable, less calibration flexibility \\
+Cross-encoder reranking & Improves final ordering of candidates & No rerank / heuristic only & Quality gain with latency cost \\
+Grounded extractive fallback & Works without external API keys & LLM-only generation & More factual control, less fluent phrasing \\
+\bottomrule
+\end{longtable}
+
+\section{Dataset Description and Source}
+The curated dataset contains public notes on:
+\begin{itemize}
+  \item RAG fundamentals,
+  \item chunking strategies,
+  \item hybrid retrieval,
+  \item vector search concepts,
+  \item reranking,
+  \item evaluation design.
+\end{itemize}
+Data files are stored in \texttt{data/raw}. Evaluation queries with expected answers are in \texttt{data/eval/questions.json}.
+
+\section{Evaluation Setup}
+\begin{itemize}
+  \item \textbf{Test Set}: 10 benchmark queries with expected answer terms and relevant documents.
+  \item \textbf{Comparative Variable (Mandatory)}: chunking strategy (\texttt{fixed} vs \texttt{markdown}).
+  \item \textbf{Metrics}: precision@5, recall@5, mean reciprocal rank (MRR), answer hit rate.
+\end{itemize}
+
+\section{Results and Analysis}
+\subsection{Baseline Smoke Test (TF-IDF + Dense)}
+\begin{center}
+\begin{tabular}{l l l l r r r r r}
+\toprule
+Chunking & Retrieval & Backend & Reranker & Chunks & P@5 & R@5 & MRR & Hit \\
+\midrule
+fixed & dense & tfidf & none & 13 & 0.2000 & 1.0000 & 0.8833 & 0.5000 \\
+markdown & dense & tfidf & none & 32 & 0.2000 & 1.0000 & 0.8167 & 0.5000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Upgraded Run (Sentence-Transformers + Hybrid + Reranker)}
+\begin{center}
+\begin{tabular}{l l l l r r r r r}
+\toprule
+Chunking & Retrieval & Backend & Reranker & Chunks & P@5 & R@5 & MRR & Hit \\
+\midrule
+fixed & hybrid & MiniLM-L6-v2 & auto & 13 & 0.2000 & 1.0000 & 1.0000 & 0.6000 \\
+markdown & hybrid & MiniLM-L6-v2 & auto & 32 & 0.2000 & 1.0000 & 0.9500 & 0.7000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{Key Observations}
+\begin{itemize}
+  \item Upgraded semantic + hybrid + rerank stack improves ranking quality and answer hit rate over baseline.
+  \item Fixed chunking gives earliest first relevant hit on this compact corpus.
+  \item Markdown chunking gives higher answer hit rate in the upgraded run.
+\end{itemize}
+
+\section{Failure Cases and Hallucination Controls}
+\begin{itemize}
+  \item Out-of-scope queries can produce weak retrieval context.
+  \item The system mitigates this by preferring grounded extraction and uncertainty-style responses when evidence is insufficient.
+  \item Optional LLM synthesis is constrained to retrieved context and can be disabled.
+\end{itemize}
+
+\section{Trade-offs}
+\begin{itemize}
+  \item Reranking improves quality but increases latency.
+  \item Compact datasets are demo-friendly but may produce optimistic metrics.
+  \item Dense model quality depends on embedding model availability.
+\end{itemize}
+
+\section{Improvements with More Time}
+\begin{enumerate}[leftmargin=1.2em,itemsep=2pt]
+  \item Expand corpus with larger FMCG/domain-specific documents.
+  \item Add latency and cost benchmarking per pipeline variant.
+  \item Add citation coverage and faithfulness scoring.
+  \item Add query rewriting and stronger fallback handling.
+  \item Build a lightweight UI for reviewer interaction.
+\end{enumerate}
+
+
+
+
+\end{document}

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "q1",
+    "question": "What are the four core stages of a RAG pipeline?",
+    "expected_answer": ["ingestion", "retrieval", "augmentation", "generation"],
+    "relevant_documents": ["rag_fundamentals"]
+  },
+  {
+    "id": "q2",
+    "question": "Why does RAG reduce hallucination risk?",
+    "expected_answer": ["grounding", "authoritative", "context"],
+    "relevant_documents": ["rag_fundamentals"]
+  },
+  {
+    "id": "q3",
+    "question": "Why is chunking still important even for long-context models?",
+    "expected_answer": ["cost", "latency", "lost-in-the-middle"],
+    "relevant_documents": ["chunking_strategies"]
+  },
+  {
+    "id": "q4",
+    "question": "What is the main trade-off between small and large chunks?",
+    "expected_answer": ["context", "precision"],
+    "relevant_documents": ["chunking_strategies"]
+  },
+  {
+    "id": "q5",
+    "question": "What does hybrid search combine?",
+    "expected_answer": ["vector", "keyword"],
+    "relevant_documents": ["hybrid_search"]
+  },
+  {
+    "id": "q6",
+    "question": "Why is cosine similarity commonly used for text embeddings?",
+    "expected_answer": ["direction", "magnitude"],
+    "relevant_documents": ["vector_search"]
+  },
+  {
+    "id": "q7",
+    "question": "Why can reranking improve RAG quality?",
+    "expected_answer": ["information loss", "more accurate", "candidate"],
+    "relevant_documents": ["reranking"]
+  },
+  {
+    "id": "q8",
+    "question": "Why is passing too many chunks to the language model risky?",
+    "expected_answer": ["noise", "cost", "buried"],
+    "relevant_documents": ["reranking"]
+  },
+  {
+    "id": "q9",
+    "question": "What does precision at k measure in retrieval evaluation?",
+    "expected_answer": ["returned", "relevant"],
+    "relevant_documents": ["evaluation_design"]
+  },
+  {
+    "id": "q10",
+    "question": "How should retrieval experiments be kept interpretable?",
+    "expected_answer": ["fixed", "change only one", "comparison"],
+    "relevant_documents": ["evaluation_design"]
+  }
+]
