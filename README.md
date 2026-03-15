@@ -100,7 +100,6 @@ Bonus coverage:
 
 ## Submission materials
 
-- Architecture notes: [docs/architecture.md](/architecture.md)
-- LaTeX source: [docs/submission_ready.tex](/submission_ready.tex)
+- Architecture notes: [/architecture.md](/architecture.md)
 - Final PDF: [artifacts/submission_ready_from_latex.pdf](artifacts/submission_ready_from_latex.pdf)
 - Latest benchmark JSON: [artifacts/eval_results_semantic.json](artifacts/eval_results_semantic.json)
